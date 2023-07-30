@@ -1,58 +1,30 @@
-// Create Web browser
+// Create web server
+// Run: node comments.js
+// Test: curl http://localhost:8000/comments
 
 var http = require('http');
 var url = require('url');
-var fs = require('fs');
-var qs = require('querystring');
 
-http.createServer(function (request, response) {
-    var pathname = url.parse(request.url).pathname;
-    console.log("Request for " + pathname + " received.");
-    if (pathname == "/") {
-        pathname = "index.html";
-    }
-    if (pathname == "/index.html") {
-        fs.readFile(pathname.substr(1), function (err, data) {
-            if (err) {
-                console.log(err);
-                response.writeHead(404, {'Content-Type': 'text/html'});
-            } else {
-                response.writeHead(200, {'Content-Type': 'text/html'});
-                response.write(data.toString());
-            }
-            response.end();
-        });
-    } else if (pathname == "/comments") {
-        var postData = "";
-        request.addListener("data", function (data) {
-            postData += data;
-        });
-        request.addListener("end", function () {
-            var obj = qs.parse(postData);
-            console.log(obj);
-            fs.readFile(pathname.substr(1), function (err, data) {
-                if (err) {
-                    console.log(err);
-                    response.writeHead(404, {'Content-Type': 'text/html'});
-                } else {
-                    response.writeHead(200, {'Content-Type': 'text/html'});
-                    response.write(data.toString());
-                }
-                response.end();
-            });
-        });
-    } else {
-        fs.readFile(pathname.substr(1), function (err, data) {
-            if (err) {
-                console.log(err);
-                response.writeHead(404, {'Content-Type': 'text/html'});
-            } else {
-                response.writeHead(200, {'Content-Type': 'text/html'});
-                response.write(data.toString());
-            }
-            response.end();
-        });
-    }
-}).listen(8080);
+// Create a web server
+var server = http.createServer(function(request, response) {
+  // Get the URL and parse it
+  var parsedUrl = url.parse(request.url, true);
 
-console.log('Server running at http://');
+  // Get the path
+  var path = parsedUrl.pathname;
+  var trimmedPath = path.replace(/^\/+|\/+$/g, '');
+
+  // Get the HTTP method
+  var method = request.method.toLowerCase();
+
+  // Send the response
+  response.end('Hello World\n');
+
+  // Log the request path
+  console.log(`Request received on path: ${trimmedPath} with method: ${method}`);
+});
+
+// Start the server and listen on port 8000
+server.listen(8000, function() {
+  console.log('The server is listening on port 8000 now');
+});
